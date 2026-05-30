@@ -49,40 +49,61 @@ That's the whole point.*
 
 ## English
 
-### A real failure
+### The failure that looks like progress
 
-An agent was optimizing embedded firmware. It:
+An agent works on a task. It edits, builds, reads the logs, edits again, builds again, reads the logs again. A tight, productive loop.
 
-- edited the code
-- built successfully
-- ran three rounds of optimization
+```
+edit → build ✓ → read logs → edit → build ✓ → read logs → ...
+```
 
-What actually happened:
+Except:
 
-- the firmware was never flashed to the device
-- the agent kept analyzing logs from an earlier build
-- all three rounds rested on a premise that was already false
+- the logs are from yesterday's build
+- the new build was never deployed to the running system
+- the system's actual state has already moved on
 
-The agent's coding ability was never the problem. It had simply lost track of the real state of the world.
+Every iteration *looks* like it closes the loop. None of them touch reality. The whole chain is reasoning on a world that no longer exists.
 
-### This is Reality Drift
+This is **not** "the agent should test more." Tests check whether the code is correct. This is the agent losing track of whether its picture of the world is *current*. A different failure entirely.
 
-**Reality Drift** is the widening gap between what an agent *believes* the world state is and what it *actually* is.
+### Definition
 
-It shows up as:
+> **Reality Drift** — the process by which an agent's internal world model gradually diverges from real-world state.
+
+The root cause has nothing to do with any specific domain:
+
+```
+World state  ≠  Agent's belief state
+```
+
+An agent acts on its belief state. When that quietly stops matching the world — and nothing forces a re-check — every downstream step inherits the gap.
+
+### How it shows up
 
 - **Stale logs** — old output treated as current truth
 - **Stale builds** — a successful compile mistaken for verified behavior
-- **Stale hardware state** — code changed, device never updated
+- **Stale external state** — code changed, the running system never updated
 - **Stale assumptions** — a reasoning chain that stays self-consistent after its premises expired
 
 The danger is that none of these look like errors. The agent stays fluent, confident, and internally consistent — while drifting further from reality with every step.
+
+### A general failure mode
+
+Reality Drift is a general failure mode of long-running AI agents. Embedded systems are merely the environment where it becomes impossible to ignore — flash the wrong build and the LED simply stays dark. But the same gap opens anywhere an agent acts on state it can't continuously see:
+
+- a **DevOps / Kubernetes agent** reasoning over a cluster state that has already rescheduled
+- a **browser agent** acting on a page that navigated away three steps ago
+- a **robotics agent** planning against a world model the sensors have already contradicted
+- a **database-migration agent** trusting a schema snapshot taken before the last migration
+
+The root cause is never the hardware. It's `World state ≠ Agent belief state`, and a loop that never re-observes.
 
 ### The fix: re-observe, don't derive
 
 The cure is not a smarter model. It is a discipline: **force the agent to periodically re-observe reality instead of deriving it from old assumptions.** Trust runtime evidence over the reasoning chain. When a new observation contradicts the current premise, stop and update the model — don't patch forward on top of it.
 
-This repo ships one concrete implementation of that discipline — a set of agent collaboration rules. It was written for embedded development (where drift is brutal and physical), but most of it generalizes to any agent workflow that depends on external state it can't see directly.
+This repo ships one concrete implementation of that discipline — a set of agent collaboration rules. They were written for embedded development (where drift is brutal and physical), but the discipline generalizes to any agent workflow that acts on external state it can't continuously see.
 
 The whole idea in two pictures.
 
@@ -121,7 +142,9 @@ Reasoning
 Reasoning   →→→   drift
 ```
 
-### Files
+### The problem is the point; the rules are one implementation
+
+Read this repo top-down: the **problem** (Reality Drift) is the durable part, the **principle** (re-observe, don't derive) is the fix, and the files below are just *one* way to enforce it.
 
 | File | What it is |
 |------|------------|
@@ -130,7 +153,7 @@ Reasoning   →→→   drift
 | [`examples/`](examples/) | "Behavior tests" for the rules — wrong-vs-fixed comparisons, a filled-in `DEBUG_STATE.md`, and path-scoped `AGENTS.md` examples. |
 | [`examples/failure-cases.md`](examples/failure-cases.md) | A wall of *real* Reality Drift incidents, dissected. The failure above is CASE-001. |
 
-These rules are *an* answer, not *the* answer. The problem above is the durable part — the rules are just how one person fights it today.
+Nobody remembers your rule #37. People remember **an agent's world model goes stale.** That sentence is the part worth spreading; the rules are just how one person fights it today.
 
 ### How to use it
 
@@ -144,40 +167,61 @@ Don't paste all of it into a small project. Rule density has a cost — keep onl
 
 ## 简体中文
 
-### 一个真实失败案例
+### 看起来像进展的失败
 
-一个 Agent 在优化嵌入式固件。它：
+一个 Agent 在做任务。改、构建、读日志、再改、再构建、再读日志。一个紧凑、高产的循环。
 
-- 修改了代码
-- 构建成功
-- 连续跑了三轮优化
+```
+改 → build ✓ → 读日志 → 改 → build ✓ → 读日志 → ...
+```
 
-而实际情况是：
+但是:
 
-- 固件根本没有烧录到设备上
-- Agent 一直在分析上一次构建留下的旧日志
-- 三轮修改全部建立在一个早已失效的前提上
+- 日志是昨天那次构建留下的
+- 新构建从未部署到正在运行的系统上
+- 系统的实际状态早就变了
 
-问题从来不是代码能力。它只是失去了对真实世界状态的感知。
+每一轮*看起来*都闭合了。没有一轮真正触碰现实。整条推理链都建立在一个不再存在的世界上。
 
-### 这就是 Reality Drift
+这**不是**"Agent 应该多测试"。测试检查的是代码对不对。这是 Agent 失去了对"自己眼中的世界是否还是当前的"的感知。完全是另一种故障。
 
-**Reality Drift（现实漂移）** 指 Agent *相信* 的世界状态，与世界 *实际* 状态之间不断扩大的偏离。
+### 定义
 
-它表现为：
+> **Reality Drift（现实漂移）** —— Agent 的内部世界模型逐渐偏离真实世界状态的过程。
+
+根因和任何具体领域都无关:
+
+```
+真实世界状态  ≠  Agent 的信念状态
+```
+
+Agent 是按它的信念状态行动的。当信念状态悄悄不再匹配世界、又没有任何机制强制它重新核对时,后续每一步都继承了这道裂缝。
+
+### 它如何暴露
 
 - **Stale Logs（过期日志）** —— 旧输出被当成当前事实
 - **Stale Builds（过期构建）** —— 把"构建成功"误当成"行为已验证"
-- **Stale Hardware State（过期硬件状态）** —— 代码改了，设备没更新
+- **Stale External State（过期外部状态）** —— 代码改了，正在运行的系统没更新
 - **Stale Assumptions（过期假设）** —— 前提已经失效，推理链却依然自洽
 
 危险之处在于：这些都不像错误。Agent 依然流畅、自信、逻辑自洽 —— 却在每一步里离现实更远。
+
+### 一个通用故障模式
+
+Reality Drift 是长时运行 AI Agent 的**通用**故障模式。嵌入式只是让它无法被忽视的环境 —— 烧错构建,灯就是不亮。但只要 Agent 在一个它无法持续观察的状态上行动,同样的裂缝就会裂开:
+
+- **DevOps / Kubernetes agent** 在一个已经重新调度过的集群状态上推理
+- **浏览器 agent** 在三步前就已经跳走的页面上操作
+- **机器人 agent** 对着一个传感器早已否定的世界模型做规划
+- **数据库迁移 agent** 信任一份在上次迁移之前拍下的 schema 快照
+
+根因从来不是硬件。是 `真实世界状态 ≠ Agent 信念状态`,加上一个永不重新观察的循环。
 
 ### 解法：重新观察，而不是推导
 
 解药不是更聪明的模型，而是一种纪律：**强制 Agent 周期性地重新观察现实，而不是从旧假设里推导它。** 运行时证据高于推理链。当新观察与当前前提矛盾时，停下来更新模型 —— 不要在错误前提上继续叠补丁。
 
-本仓库提供这套纪律的一个具体实现 —— 一份 Agent 协作规则。它最初为嵌入式开发而写（那里的漂移既残酷又物理化），但其中大部分适用于任何依赖"看不见的外部状态"的 Agent 工作流。
+本仓库提供这套纪律的一个具体实现 —— 一份 Agent 协作规则。它最初为嵌入式开发而写（那里的漂移既残酷又物理化），但这套纪律适用于任何"在无法持续观察的外部状态上行动"的 Agent 工作流。
 
 整套思路两张图就够。
 
@@ -216,7 +260,9 @@ Reasoning
 Reasoning   →→→   drift
 ```
 
-### 文件
+### 问题才是核心；规则只是一种实现
+
+这个仓库请自上而下读：**问题**（Reality Drift）是持久的部分，**原则**（重新观察，而不是推导）是解法，下面的文件只是强制执行它的*一种*方式。
 
 | 文件 | 是什么 |
 |------|--------|
@@ -225,7 +271,7 @@ Reasoning   →→→   drift
 | [`examples/`](examples/) | 规则的"行为测试" —— 错误 vs 改好对照、填好的 `DEBUG_STATE.md`、目录级 path-scoped `AGENTS.md` 示例。 |
 | [`examples/failure-cases.md`](examples/failure-cases.md) | 一面 *真实* Reality Drift 事故墙，逐个解剖。上面那个案例就是 CASE-001。 |
 
-这些规则是 *一个* 答案，不是 *唯一* 答案。上面那个问题才是持久的部分 —— 规则只是一个人当下对抗它的方式。
+没人会记住你的第 37 条规则。别人记住的是：**Agent 的世界模型会过期。** 这句话才是值得传播的部分；规则只是一个人当下对抗它的方式。
 
 ### 使用方式
 
