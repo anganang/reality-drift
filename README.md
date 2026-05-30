@@ -6,6 +6,45 @@
 
 **[English](#english)** · **[简体中文](#简体中文)**
 
+<details>
+<summary>💼 The infomercial version · 听听律师怎么说</summary>
+
+<br>
+
+> Did you — or a loved one — watch your AI agent run **THREE rounds** of
+> optimization on firmware it never flashed? You are **NOT** alone.
+>
+> They call it **Reality Drift**, and your agent's got it *bad*. Stale logs?
+> Phantom builds? A reasoning chain so smooth it forgot to check whether the
+> device was even **ON**?
+>
+> Hey — that's not your fault. *(points at camera)*
+>
+> I've got a workflow for that. Re-observe reality, stop trusting the green
+> checkmark, and never optimize a ghost again. No win, no fee.
+>
+> Don't just *hope* your agent's in sync. **Better Check Reality.™**
+
+> 你 —— 或者你的 Agent —— 还在被**现实漂移**折磨吗?
+> 代码改了三轮、构建次次成功,结果固件压根没烧进去?
+>
+> 这不怪你!这病叫 **Reality Drift**,市面上十个 Agent 九个中招!
+> 过期日志、幻觉构建、一条顺到忘了问"设备开没开"的推理链 ——
+>
+> 别让一个绿色的 ✓ 毁了你的下午。一套规则,重新观察现实,
+> 假象退散,**不好使不要钱**。还在等?现实同步,刻不容缓。™
+
+---
+
+*…and yes, that pitch was exactly the kind of smooth, confident claim this repo
+teaches you to distrust. So don't take my word for it — go check your device.
+That's the whole point.*
+
+*…当然,你刚刚听的,就是那种"自信、顺滑、你不该全信"的推销腔。所以 ——
+别信我这段广告,去核对你的设备状态。这正是本仓库要讲的事。*
+
+</details>
+
 ---
 
 ## English
