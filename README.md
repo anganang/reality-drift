@@ -34,6 +34,20 @@ Agent:
 
 因此现实必须被周期性重新观察，而不是从假设中推导。这套规则的所有条款都在对抗同一个根问题：**Agent 的世界模型会过期**。
 
+## Reality Drift
+
+Reality Drift 指：
+
+Agent 当前相信的世界状态，
+与真实世界状态逐渐偏离的过程。
+
+表现包括：
+
+- Stale Logs
+- Stale Builds
+- Stale Hardware State
+- Stale Assumptions
+
 也许未来有一天会过期，但这是现阶段你能看到的最扎实的 `AGENTS.md` ，用于约束 AI Agent的协作方式。重点面向嵌入式开发、运行时证据、回滚边界和基于证据的调试。除去嵌入式相关的规则（当然相对较少），其他领域也通用。
 
 ## 文件
