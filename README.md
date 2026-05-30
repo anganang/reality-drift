@@ -1,61 +1,122 @@
-# Agent 规则
+# Reality Drift
 
-防止 Agent 现实漂移（Reality Drift）的方法论，一套规则与工作流。
+> An AI agent's context is not reality. Over a long session, the two quietly drift apart.
+> AI Agent 的上下文不是现实。会话越长，两者越是悄悄分叉。
 
-## Core Assumption
+**[English](#english)** · **[简体中文](#简体中文)**
 
-Agent 的上下文不是现实。
+---
 
-在嵌入式开发中，设备实际状态可能与以下任何一项脱节：
+## English
 
-- 代码已经修改，但设备没更新
-- 构建已经成功，但行为未验证
-- 日志已经过期，但仍被当作事实
-- 推理链保持自洽，但前提已经失效
+### A real failure
 
-## 一个真实失败案例
+An agent was optimizing embedded firmware. It:
 
-Agent:
-- 修改代码
+- edited the code
+- built successfully
+- ran three rounds of optimization
+
+What actually happened:
+
+- the firmware was never flashed to the device
+- the agent kept analyzing logs from an earlier build
+- all three rounds rested on a premise that was already false
+
+The agent's coding ability was never the problem. It had simply lost track of the real state of the world.
+
+### This is Reality Drift
+
+**Reality Drift** is the widening gap between what an agent *believes* the world state is and what it *actually* is.
+
+It shows up as:
+
+- **Stale logs** — old output treated as current truth
+- **Stale builds** — a successful compile mistaken for verified behavior
+- **Stale hardware state** — code changed, device never updated
+- **Stale assumptions** — a reasoning chain that stays self-consistent after its premises expired
+
+The danger is that none of these look like errors. The agent stays fluent, confident, and internally consistent — while drifting further from reality with every step.
+
+### The fix: re-observe, don't derive
+
+The cure is not a smarter model. It is a discipline: **force the agent to periodically re-observe reality instead of deriving it from old assumptions.** Trust runtime evidence over the reasoning chain. When a new observation contradicts the current premise, stop and update the model — don't patch forward on top of it.
+
+This repo ships one concrete implementation of that discipline — a set of agent collaboration rules. It was written for embedded development (where drift is brutal and physical), but most of it generalizes to any agent workflow that depends on external state it can't see directly.
+
+### Files
+
+| File | What it is |
+|------|------------|
+| [`AGENTS.md`](AGENTS.md) | A reference implementation: cross-project global collaboration rules. |
+| [`AGENTS.project.md`](AGENTS.project.md) | A generalized project-level rule template (embedded-flavored). |
+| [`examples/`](examples/) | "Behavior tests" for the rules — wrong-vs-fixed comparisons, a filled-in `DEBUG_STATE.md`, and path-scoped `AGENTS.md` examples. |
+| [`examples/failure-cases.md`](examples/failure-cases.md) | A wall of *real* Reality Drift incidents, dissected. The failure above is CASE-001. |
+
+These rules are *an* answer, not *the* answer. The problem above is the durable part — the rules are just how one person fights it today.
+
+### How to use it
+
+1. Read [`examples/do-vs-dont.md`](examples/do-vs-dont.md) first — it shows the actual agent behavior each rule is meant to stop. Match it against the mistakes your own agent makes.
+2. Use `AGENTS.md` as a global agent instruction; delete the clauses you don't need.
+3. Copy `AGENTS.project.md` into your repo root, then add path-scoped `AGENTS.md` files in modules that own protocol details, hardware, persistence formats, timing, or verification paths. See [`examples/layered-agents/`](examples/layered-agents/) for what belongs at the root vs. per module.
+
+Don't paste all of it into a small project. Rule density has a cost — keep only the rules that stop a failure you actually hit.
+
+---
+
+## 简体中文
+
+### 一个真实失败案例
+
+一个 Agent 在优化嵌入式固件。它：
+
+- 修改了代码
 - 构建成功
-- 连续三轮优化
+- 连续跑了三轮优化
 
-实际情况：
-- 固件根本没有烧录
-- Agent 仍然基于旧日志分析
-- 三轮修改全部建立在错误前提上
+而实际情况是：
 
-问题不是代码能力。
-问题是 Agent 已经失去对现实状态的感知。
+- 固件根本没有烧录到设备上
+- Agent 一直在分析上一次构建留下的旧日志
+- 三轮修改全部建立在一个早已失效的前提上
 
-本仓库提供一套规则与工作流，用于强制 Agent 周期性重新观察现实，而不是持续从旧假设推导。
+问题从来不是代码能力。它只是失去了对真实世界状态的感知。
 
-重点面向嵌入式开发，但同样适用于需要持续验证外部状态的 Agent 工作流。
+### 这就是 Reality Drift
 
-因此现实必须被周期性重新观察，而不是从假设中推导。这套规则的所有条款都在对抗同一个根问题：**Agent 的世界模型会过期**。
+**Reality Drift（现实漂移）** 指 Agent *相信* 的世界状态，与世界 *实际* 状态之间不断扩大的偏离。
 
-## Reality Drift
+它表现为：
 
-Reality Drift 指：
+- **Stale Logs（过期日志）** —— 旧输出被当成当前事实
+- **Stale Builds（过期构建）** —— 把"构建成功"误当成"行为已验证"
+- **Stale Hardware State（过期硬件状态）** —— 代码改了，设备没更新
+- **Stale Assumptions（过期假设）** —— 前提已经失效，推理链却依然自洽
 
-Agent 当前相信的世界状态，
-与真实世界状态逐渐偏离的过程。
+危险之处在于：这些都不像错误。Agent 依然流畅、自信、逻辑自洽 —— 却在每一步里离现实更远。
 
-表现包括：
+### 解法：重新观察，而不是推导
 
-- Stale Logs
-- Stale Builds
-- Stale Hardware State
-- Stale Assumptions
+解药不是更聪明的模型，而是一种纪律：**强制 Agent 周期性地重新观察现实，而不是从旧假设里推导它。** 运行时证据高于推理链。当新观察与当前前提矛盾时，停下来更新模型 —— 不要在错误前提上继续叠补丁。
 
-也许未来有一天会过期，但这是现阶段你能看到的最扎实的 `AGENTS.md` ，用于约束 AI Agent的协作方式。重点面向嵌入式开发、运行时证据、回滚边界和基于证据的调试。除去嵌入式相关的规则（当然相对较少），其他领域也通用。
+本仓库提供这套纪律的一个具体实现 —— 一份 Agent 协作规则。它最初为嵌入式开发而写（那里的漂移既残酷又物理化），但其中大部分适用于任何依赖"看不见的外部状态"的 Agent 工作流。
 
-## 文件
+### 文件
 
-- `AGENTS.md`：跨项目通用的全局协作规则。
-- `AGENTS.project.md`：通用化后的嵌入式项目级规则模板。
-- `examples/`：规则的"行为测试"——错误 vs 改好对照、`DEBUG_STATE.md` 填写示例、目录级 path-scoped `AGENTS.md` 示例。复用前先看这里，按需裁剪而不是整份照搬。
+| 文件 | 是什么 |
+|------|--------|
+| [`AGENTS.md`](AGENTS.md) | 一个参考实现：跨项目通用的全局协作规则。 |
+| [`AGENTS.project.md`](AGENTS.project.md) | 通用化的项目级规则模板（带嵌入式色彩）。 |
+| [`examples/`](examples/) | 规则的"行为测试" —— 错误 vs 改好对照、填好的 `DEBUG_STATE.md`、目录级 path-scoped `AGENTS.md` 示例。 |
+| [`examples/failure-cases.md`](examples/failure-cases.md) | 一面 *真实* Reality Drift 事故墙，逐个解剖。上面那个案例就是 CASE-001。 |
 
-## 使用方式
+这些规则是 *一个* 答案，不是 *唯一* 答案。上面那个问题才是持久的部分 —— 规则只是一个人当下对抗它的方式。
 
-将 `AGENTS.md` 作为全局 agent instruction 使用。把 `AGENTS.project.md` 复制或改写到具体仓库根目录，再根据项目实际情况，在拥有协议细节、硬件资源、持久化格式、时序约束或验证路径的模块目录下补充 path-scoped `AGENTS.md`。参考 `examples/layered-agents/` 的分层方式判断哪些规则上移到根、哪些留在模块。
+### 使用方式
+
+1. 先读 [`examples/do-vs-dont.md`](examples/do-vs-dont.md) —— 它展示每条规则想拦住的实际 Agent 行为。拿它对照你自己 Agent 常犯的错。
+2. 把 `AGENTS.md` 作为全局 agent instruction 使用，删掉用不上的条款。
+3. 复制 `AGENTS.project.md` 到你的仓库根目录，再给拥有协议细节、硬件、持久化格式、时序或验证路径的模块补 path-scoped `AGENTS.md`。哪些上移到根、哪些留在模块，参考 [`examples/layered-agents/`](examples/layered-agents/)。
+
+不要把所有条款都搬进小项目。规则密度是有成本的 —— 只保留能拦住你实际遇到的失败模式的那些。
