@@ -19,7 +19,8 @@ Agent 的上下文不是现实。
 
 - `AGENTS.md`：跨项目通用的全局协作规则。
 - `AGENTS.project.md`：通用化后的嵌入式项目级规则模板。
+- `examples/`：规则的"行为测试"——错误 vs 改好对照、`DEBUG_STATE.md` 填写示例、目录级 path-scoped `AGENTS.md` 示例。复用前先看这里，按需裁剪而不是整份照搬。
 
 ## 使用方式
 
-将 `AGENTS.md` 作为全局 agent instruction 使用。把 `AGENTS.project.md` 复制或改写到具体仓库根目录，再根据项目实际情况，在拥有协议细节、硬件资源、持久化格式、时序约束或验证路径的模块目录下补充 path-scoped `AGENTS.md`。
+将 `AGENTS.md` 作为全局 agent instruction 使用。把 `AGENTS.project.md` 复制或改写到具体仓库根目录，再根据项目实际情况，在拥有协议细节、硬件资源、持久化格式、时序约束或验证路径的模块目录下补充 path-scoped `AGENTS.md`。参考 `examples/layered-agents/` 的分层方式判断哪些规则上移到根、哪些留在模块。
