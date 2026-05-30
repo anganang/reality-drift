@@ -71,6 +71,10 @@ This is **not** "the agent should test more." Tests check whether the code is co
 
 > **Reality Drift** — the process by which an agent's internal world model gradually diverges from real-world state.
 
+Or, in one line for engineers:
+
+> *The agent stopped checking reality and started trusting itself.*
+
 The root cause has nothing to do with any specific domain:
 
 ```
@@ -78,6 +82,17 @@ World state  ≠  Agent's belief state
 ```
 
 An agent acts on its belief state. When that quietly stops matching the world — and nothing forces a re-check — every downstream step inherits the gap.
+
+### What Reality Drift is *not*
+
+The name is sharp only if it excludes things. Reality Drift is **not**:
+
+- **bad code** — the code can be perfectly correct
+- **bad reasoning** — the reasoning can be flawless
+- **hallucination** — nothing is invented; the inputs were once real
+- **missing tests** — more tests don't help if they run against stale state
+
+Reality Drift can happen *even when the reasoning is correct.* The problem isn't the logic — it's that the premises are no longer current. A flawless deduction from an expired fact is still wrong.
 
 ### How it shows up
 
@@ -189,6 +204,10 @@ Don't paste all of it into a small project. Rule density has a cost — keep onl
 
 > **Reality Drift（现实漂移）** —— Agent 的内部世界模型逐渐偏离真实世界状态的过程。
 
+或者,给工程师一句话:
+
+> *Agent 不再核对现实,开始相信自己。*
+
 根因和任何具体领域都无关:
 
 ```
@@ -196,6 +215,17 @@ Don't paste all of it into a small project. Rule density has a cost — keep onl
 ```
 
 Agent 是按它的信念状态行动的。当信念状态悄悄不再匹配世界、又没有任何机制强制它重新核对时,后续每一步都继承了这道裂缝。
+
+### Reality Drift *不是*什么
+
+一个名字只有在能排除东西时才锋利。Reality Drift **不是**:
+
+- **代码烂** —— 代码可以完全正确
+- **推理烂** —— 推理可以无懈可击
+- **幻觉** —— 没有任何东西是编造的;那些输入曾经都是真的
+- **缺测试** —— 测试再多也没用,如果它们跑在过期的状态上
+
+Reality Drift *甚至会在推理完全正确时发生。* 问题不在逻辑 —— 而在前提已经不是当前的了。从一个过期事实出发的完美推导,依然是错的。
 
 ### 它如何暴露
 
