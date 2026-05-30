@@ -84,6 +84,43 @@ The cure is not a smarter model. It is a discipline: **force the agent to period
 
 This repo ships one concrete implementation of that discipline — a set of agent collaboration rules. It was written for embedded development (where drift is brutal and physical), but most of it generalizes to any agent workflow that depends on external state it can't see directly.
 
+The whole idea in two pictures.
+
+**Right — the loop closes.** Every few steps, reasoning returns to reality and re-observes:
+
+```
+  ┌──────────────────────┐
+  ▼                      │   re-observe,
+Reality                  │   every few steps
+  │ observe              │
+  ▼                      │
+Evidence                 │
+  │ update               │
+  ▼                      │
+Agent model              │
+  │ reason               │
+  ▼                      │
+Reasoning ───────────────┘
+```
+
+**Wrong — the line leaves reality and never comes back. That's drift:**
+
+```
+Reality              ← seen once, then left behind
+  ╳
+  ┊
+Agent model
+  │ reason
+  ▼
+Reasoning
+  │ keeps reasoning on its own output
+  ▼
+Reasoning
+  │
+  ▼
+Reasoning   →→→   drift
+```
+
 ### Files
 
 | File | What it is |
@@ -141,6 +178,43 @@ Don't paste all of it into a small project. Rule density has a cost — keep onl
 解药不是更聪明的模型，而是一种纪律：**强制 Agent 周期性地重新观察现实，而不是从旧假设里推导它。** 运行时证据高于推理链。当新观察与当前前提矛盾时，停下来更新模型 —— 不要在错误前提上继续叠补丁。
 
 本仓库提供这套纪律的一个具体实现 —— 一份 Agent 协作规则。它最初为嵌入式开发而写（那里的漂移既残酷又物理化），但其中大部分适用于任何依赖"看不见的外部状态"的 Agent 工作流。
+
+整套思路两张图就够。
+
+**对 —— 环闭合。** 每隔几步,推理会回到现实重新观察:
+
+```
+  ┌──────────────────────┐
+  ▼                      │   每隔几步
+Reality                  │   重新观察
+  │ observe              │
+  ▼                      │
+Evidence                 │
+  │ update               │
+  ▼                      │
+Agent model              │
+  │ reason               │
+  ▼                      │
+Reasoning ───────────────┘
+```
+
+**错 —— 线离开现实,再也不回头。这就是 drift:**
+
+```
+Reality              ← 只看了一次,之后被丢下
+  ╳
+  ┊
+Agent model
+  │ reason
+  ▼
+Reasoning
+  │ 在自己的结论上继续推
+  ▼
+Reasoning
+  │
+  ▼
+Reasoning   →→→   drift
+```
 
 ### 文件
 
