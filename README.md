@@ -1,12 +1,12 @@
-# Embedded Agent Rules
+# 嵌入式 Agent 规则
 
-Personal `AGENTS.md` rules for AI coding agents, focused on embedded systems, runtime evidence, rollback boundaries, and evidence-driven debugging.
+这是我的个人 `AGENTS.md` 规则，用于约束 AI 编程助手的协作方式。重点面向嵌入式开发、运行时证据、回滚边界和基于证据的调试。
 
-## Files
+## 文件
 
-- `AGENTS.md`: global cross-project collaboration rules.
-- `AGENTS.project.md`: generic project-level rules for embedded repositories.
+- `AGENTS.md`：跨项目通用的全局协作规则。
+- `AGENTS.project.md`：通用化后的嵌入式项目级规则模板。
 
-## Usage
+## 使用方式
 
-Use `AGENTS.md` as the global agent instruction file. Copy or adapt `AGENTS.project.md` into a repository root, then add path-scoped `AGENTS.md` files under modules that own protocol details, hardware resources, persistence formats, timing constraints, or validation paths.
+将 `AGENTS.md` 作为全局 agent instruction 使用。把 `AGENTS.project.md` 复制或改写到具体仓库根目录，再根据项目实际情况，在拥有协议细节、硬件资源、持久化格式、时序约束或验证路径的模块目录下补充 path-scoped `AGENTS.md`。
